@@ -15,8 +15,8 @@ router.get('/', async (req, res) => {
 
 // find one category by its `id` value
 router.get('/:id', async (req, res) => {
-  const category = await Category
-    .findByPk(req.params.id, { include: Product });
+  const { id } = req.params
+  const category = await Category.findByPk(id, { include: Product });
 
   if (category)
     res.json(category);
@@ -26,11 +26,11 @@ router.get('/:id', async (req, res) => {
 
 // create a new category
 router.post('/', async (req, res) => {
-  const { categoryName } = req.body;
+  const { category_name } = req.body;
 
   try {
     const [category, created] = await Category.findOrCreate({
-      where: { category_name: categoryName }
+      where: { category_name }
     });
 
     if (created)
@@ -48,16 +48,16 @@ router.post('/', async (req, res) => {
 // update a category by its `id` value
 router.put('/:id', async (req, res) => {
   const { id } = req.params
-  const categoryName = req.body
+  const { category_name } = req.body
 
   try {
     const amountUpdated = await Category.update(
-      categoryName, {
+      { category_name }, {
       where: { id }
     });
 
     if (amountUpdated > 0) {
-      res.json({ message: "Success", id, categoryName: req.body });
+      res.json({ message: "Success", id, category_name });
     } else {
       res.status(500).json({ message: 'No category updated' })
     }
