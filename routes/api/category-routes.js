@@ -49,30 +49,25 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   const { id } = req.params
   const { category_name } = req.body
+  const category = await Category.findByPk(id);
 
-  try {
-    const amountUpdated = await Category.update(
-      { category_name }, {
-      where: { id }
-    });
+  if (!category) { return res.status(404).json({ message: 'No category with that ID' }) }
 
-    if (amountUpdated > 0) {
-      res.json({ message: "Success", id, category_name });
-    } else {
-      res.status(500).json({ message: 'No category updated' })
-    }
-  } catch (error) {
-    res.status(500).json({ message: 'error', error })
-  }
+  const updated = await Category.update({ category_name }, { where: { id } });
+
+  if (updated > 0)
+    res.json({ message: "Success", id, category_name });
+  else
+    res.status(500).json({ message: 'No category updated' })
 });
 
 // delete a category by its `id` value
 router.delete('/:id', async (req, res) => {
-  const deletedCategory = await Category.findByPk(req.params.id);
+  const category = await Category.findByPk(req.params.id);
 
-  if (deletedCategory) {
-    await deletedCategory.destroy();
-    res.json({ message: 'Category deleted', category: deletedCategory });
+  if (category) {
+    const deletedCategory = await category.destroy();
+    res.json({ message: 'Category deleted', deletedCategory });
   }
   else
     res.status(404).json({ message: 'No category at that ID' })

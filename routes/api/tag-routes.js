@@ -42,7 +42,7 @@ router.put('/:id', async (req, res) => {
   const { tag_name } = req.body;
   const tag = await Tag.findByPk(id);
 
-  if (!tag) { return res.json({ message: 'No tag with that ID' }) }
+  if (!tag) { return res.status(404).json({ message: 'No tag with that ID' }) }
 
   const updated = await Tag.update({ tag_name }, { where: { id } })
 
